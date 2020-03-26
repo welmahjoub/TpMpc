@@ -127,8 +127,9 @@ meilleurmodele_stable=function(data, idxp, idxc,nbFOIS){
 #eqm_stable(ozone, c(Vs, 4), 1)
 #K nbre de fois
 
-eqm=#eqm1 eqm2
-Vr=#2 8 
+#eqm=#eqm1 eqm2
+#Vr=#2 8 
+
 # fonction selec_asc à completer
 selec_asc = function(data, idx_p, idx_c, K){
   Vs = c()
@@ -163,6 +164,27 @@ selec_asc = function(data, idx_p, idx_c, K){
 	}
 	
 	return (out[,-1])
+}
+
+kplis = function(data, idxp, idxc,k){
+
+	k = floor(runif(nrow(data), 1, K+1))
+
+	eqm=eqm=sapply(c(1:k),function(x){
+
+	  	apprenti=data[which(k==x),]
+		test=data[-which(k==x),]
+
+		mod= myreg(apprenti, idxp,idxc);
+		prediction=predict( mod,test);
+ 		eq=prediction-test[,idxc]
+
+    	mean(eq^2);
+	})
+
+	
+    return (mean(eqm))
+  
 }
 
 
