@@ -170,7 +170,7 @@ kplis = function(data, idxp, idxc,k){
 
 	k = floor(runif(nrow(data), 1, K+1))
 
-	eqm=eqm=sapply(c(1:k),function(x){
+	eqm=sapply(c(1:k),function(x){
 
 	  	apprenti=data[which(k==x),]
 		test=data[-which(k==x),]

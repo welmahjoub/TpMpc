@@ -5,7 +5,7 @@ ozone_n = read.table("./ozone_n.txt", header = T)
 ozone = rbind(ozone, ozone_n) # on regroupe les 2 jeux
 
 
-ap_index=sample(nrow(ozone),floor(nrow(ozone)*15/100))
+ap_index=sample(nrow(ozone),floor(nrow(ozone)*85/100))
 
 ######## Exercice 4: Ajout de puissances, modèle polynomial
 # On va tenter dans cet exercice d'améliorer un modèle en créant des modèles polynomiaux.
@@ -23,7 +23,7 @@ mod_best = myreg( ozone_app, 3,1)
 prediction=predict(mod_best,ozone_test)
 eq=prediction-ozone_test$y
 eqm=mean(eq^2)
-eqm# 343.8417
+eqm#349.4211
 
 
 
@@ -48,7 +48,7 @@ mod_best = myreg( ozone_app, c(3,12),1)
 prediction=predict(mod_best,ozone_test)
 eq=prediction-ozone_test$y
 eqm=mean(eq^2)
-eqm#323.59
+eqm#331.1599
 
 
 
@@ -72,7 +72,7 @@ mod_best = myreg( ozone_app, c(3,12),1)
 prediction=predict(mod_best,ozone_test)
 eq=prediction-ozone_test$y
 eqm=mean(eq^2)
-eqm#323.8809
+eqm#332.4369
 
 # puissance positive 
 sapply(c(2:9),function(x){
@@ -89,12 +89,15 @@ mean(eq^2)
 
 })
 
-[1] 323.5900 323.8809 325.8597 328.8391
-[5] 332.2564 335.6788 338.7972 341.4136
+ 331.1599 332.4369 334.0434 335.8503 337.7428 339.6186 341.3912 342.9950
+
+#plus petit puissance 2 puis 3 puis 4
 
 # Question : Estimer l'erreur de généralisation du modèle qui utilise x2, et x2^3
 # Vaut-il mieux prendre la puissance 3 ou 2 pour x2 ? x2^2
-
+ eqmX2 = eqm#349.4211
+eqmX2^2 = 331.1599 
+eqmX2^3 =332.4369
 
 # Essayer d'autres puissances et regarder la performance (erreur de généralisation)
 # Vous pouvez choisir pour x2 une ou deux puissances (celles qui mènent à la meilleure 
@@ -117,9 +120,11 @@ mean(eq^2)
 
 
 })
-[1] 640.6763 577.1562 522.4943 475.5800
-[5] 435.7750 402.7239 376.1630 355.7620
-[9] 341.0310
+
+#plus on diminue la puissance plus eqm diminue (-1 est la meilleure)
+
+ 344.5238 343.2030 341.5953 339.7147 337.6285 335.4705 333.4363 331.7508 330.6136
+
 
 
 # Idem, vous pouvez essayer des racines (puissance 0.5, 1.5, etc)
@@ -140,18 +145,21 @@ mean(eq^2)
 
 })
 
-# 328.0692 324.3217 323.4771
+#plus on diminue la puissance plus eqm diminue (0.5 est la meilleure)
+
+# 330.1662 330.6886 331.7486
 
 # Créer un vecteur v qui contient toutes les puissances (3 ou 4 max) que vous avez gardées
 
 
 # Vous pouvez maintenant ajouter les colonnes adaptées dans le tableau ozone : 
-v=c(2.5,2,3)
+v=c(0.5,-1,2)
 ozone_v2 = puissance(ozone, 3, v)
 # Vous pouvez vérifier que la colonne 3 de ozone a été mise à toutes les puissances qui
 # sont dans v.
 
 dim(ozone_v2)#14
+ozone_v2
 
 # Estimer l'erreur de généralisation du modèle qui utilise toutes les variables (dont celles 
 # que l'on vient de créer). Est ce mieux qu'avant ?
@@ -163,7 +171,9 @@ ozone_test=ozone_v2[-ap_index,]
 mod_best = myreg( ozone_app, c(3,12,13,14),1)
 prediction=predict(mod_best,ozone_test)
 eq=prediction-ozone_test$y
-mean(eq^2)#895.2304
+mean(eq^2)#335.7019
+
+non c'est pas meilleur que les autres
 
 
 
@@ -187,7 +197,7 @@ mod_complet= myreg(ozone_app, c(2:11),1);
 
 prediction=predict(mod_complet,ozone_test)
 eq=prediction-ozone_test$y
-mean(eq^2)# 439.0908
+mean(eq^2)#352.4608
 
 # Cette performance nous servira de base (on va essayer d'améliorer cette perf en mettant des 
 # puissances et en faisant de la sélection de variables)
@@ -197,17 +207,17 @@ mean(eq^2)# 439.0908
 
 #selec_asc = function(data, idx_p, idx_c, K)
 
-selec_asc (ozone, c(2:11), 1, 100)# 3.0000  11.0000   5.0000  10.0000
+selec_asc (ozone, c(2:11), 1, 100)# 3.0000  11.0000   5.0000  9.0000
 
-mod_asd= myreg(ozone_app, c(3,11,5,10),1);
+mod_asd= myreg(ozone_app, c(3,11,5,9),1);
 
 prediction=predict(mod_asd,ozone_test)
 eq=prediction-ozone_test$y
-mean(eq^2)#  291.9948
+mean(eq^2)#  280.5422
 
 # Ajouter maintenant les puissances que vous avez choisies pour la variable x2
 
-v=c(2.5,2,3)
+v=c(0.5,-1,2)
 ozone_v2 = puissance(ozone, 3, v)
 
 ozone_v2
@@ -218,15 +228,29 @@ ozone_v2
 ozone_app=ozone_v2[ap_index,]
 ozone_test=ozone_v2[-ap_index,] 
 
-mod_asd_puis= myreg(ozone_app, c(3,11,5,10,12,13,14),1);
+mod_asd_puis= myreg(ozone_app, c(3,11,5,9,12,13,14),1);
 
 prediction=predict(mod_asd_puis,ozone_test)
 eq=prediction-ozone_test$y
-mean(eq^2)# 4534.648
+mean(eq^2)#249.7062
 
 
 # Puis appliquer la sélection de variables. Trouvez vous un meilleur modèle ?
 
+selec_asc (ozone_v2, c(2:14), 1, 100)
+
+# 14.0000  11.0000   5.0000
+# 306.0249 232.7981 194.6794
+
+
+# 14.000  11.0000   5.0000   8.0000   9.000
+# 299.787 239.9129 207.6448 204.5929 199.294
+
+mod_asd_puis= myreg(ozone_app, c(14,11,5),1);
+
+prediction=predict(mod_asd_puis,ozone_test)
+eq=prediction-ozone_test$y
+mean(eq^2)#277.8333
 
 # Vous pourrez ensuite ajouter une ou deux puissances (choisies) pour les autres variables 
 # et ainsi essayer de trouver un modèle meilleur.
@@ -264,6 +288,8 @@ test = ozone[which(k==1), ]
 app = ozone[-which(k==1), ]
 # avec ça vous pouvez faire le 1 er pli 
 # puis faire pour k=2 , etc... (avec une boucle)
+
+#Voir la fonction
 
 # 2) Implémenter la sélection descendante
 

@@ -60,7 +60,7 @@ dim(ozone) # il y a maintenant 111 individus dans ozone.
 # On va choisir ici de mettre 17 individus (environ 15% de ozone) de cot?? dans un jeu de test
 # A vous de jouer, vous devez cr??er ozone_test (17 individus au hasard) et ozone_app (tous les autres)
 
-ap_index=sample(nrow(ozone),floor(nrow(ozone)*15/100))
+ap_index=sample(nrow(ozone),floor(nrow(ozone)*85/100))
 	ozone_app=ozone[ap_index,]
 	ozone_test=ozone[-ap_index,] 
 
@@ -71,33 +71,41 @@ ap_index=sample(nrow(ozone),floor(nrow(ozone)*15/100))
 
 selec_asc (ozone_app, c(2:11), 1, 100)
 
-         [,1]     [,2]    [,3]
-[1,]   2.0000  11.0000   5.000
-[2,] 268.1876 190.2123 141.854
+   [,1]     [,2]     [,3]     [,4]
+[1,]   3.000  11.0000   5.0000   8.0000
+[2,] 333.835 283.5308 234.5805 232.2848
 
 
 # Cr??er un mod??le avec ces variables ?? partir du jeu d'apprentissage.
 
-mod_3variables= myreg(ozone_app, c(2,11,5),1);
+mod_3variables= myreg(ozone_app, c(3,11,5,8),1);
 
- prediction=predict(mod_3variables, ozone_test)
- eq=prediction-ozone_test$y
- mean(eq^2)
+ 
+
+
 
 # Calculer l'EQM de ce mod??le sur le jeu de test (pr??dire le y du jeu de test et calculer l'EQM)
 # Retenez cette valeur, elle correspond ?? l'estimation de la performance de ce mod??le.
 
-	mod= myreg(ozone_app, c(2,11,5),1);
-	prediction=predict( mod,ozone_test);
- 	eq=prediction-ozone_test[,1]
-	eqm=mean(eq^2);
-	eqm
+	prediction=predict(mod_3variables, ozone_test)
+ eq=prediction-ozone_test$y
+ mean(eq^2)#119.5608
 
 # Essayez une nouvelle s??lection ascendante. Si les variables s??lectionn??es sont diff??rentes, 
 # estimer la performance de ce nouveau mod??le sur le jeu de test.
 
-# Faites cette proc??dure plusieurs fois, et d??terminer le meilleur mod??le pour pr??dire y
+mod_3variables= myreg(ozone_app, c(3,11,5,8),1);
+prediction=predict(mod_3variables, ozone_test)
+ eq=prediction-ozone_test$y
+mean(eq^2)#119.5608
 
+mod_3variables= myreg(ozone_app, c(3,11,5,6),1);
+prediction=predict(mod_3variables, ozone_test)
+ eq=prediction-ozone_test$y
+ mean(eq^2)#137.6262
+
+# Faites cette proc??dure plusieurs fois, et d??terminer le meilleur mod??le pour pr??dire y
+mod_3variables= myreg(ozone_app, c(3,11,5,8),1);
 
 
 
