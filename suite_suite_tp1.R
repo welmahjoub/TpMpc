@@ -292,8 +292,58 @@ app = ozone[-which(k==1), ]
 #Voir la fonction
 
 # 2) Implémenter la sélection descendante
+		
+   		eqm=combn(c(1,2,3,4),3, function(x){
+
+   			eqm_stable(ozone,c( x),1 , 1)
+			print(x)
+   			
+   		})
+eqm
 
 
+selec_desc = function(data, idx_p, idx_c, K){
+
+  Vs = idx_p
+  nb=length(Vs)
+
+  Cb=eqm_stable(data,idx_p,idx_c , K)
+
+  test=TRUE
+  out = matrix(0, nrow = 2)
+  
+ 
+   while (test & nb>0){
+
+   		res=matrix(0, nrow = 2)
+   		
+   		combn(Vs, nb-1, function(x){
+
+   			eq=eqm_stable(data, x,idx_c , K)
+   			res = cbind(res, c(x, eq))
+   		})
+
+		C_X_best=min(res[1,])# le performance du cb  : eqm du combinaison la plus performante
+		indice_min_eqm=which.min(res[1,])# xb
+		
+		combin=res[0,indice_min_eqm]# recuper la bonne combinaison
+		
+		if (C_X_best < Cb)
+		{
+			Vs=combin
+			Cb=C_X_best
+			out = cbind(out, c(combin, C_X_best))
+			
+		}else
+		{
+			test=FALSE
+		}
+	}
+	
+	return (out[,-1])
+}
+
+selec_desc(ozone, c(2:11),1, 100)
 
 
 
