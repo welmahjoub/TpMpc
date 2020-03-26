@@ -165,6 +165,10 @@ prediction=predict(mod_best,ozone_test)
 eq=prediction-ozone_test$y
 mean(eq^2)#895.2304
 
+
+
+
+
 ##### Exercice 5 : ajout de puissance et sélection de variables en pratique
 
 # Comme expliqué en cours, lorsqu'on utilise un algo de sélection de variables, il faut
@@ -173,7 +177,17 @@ mean(eq^2)#895.2304
 # Question : Si ce n'est déjà fait, séparer le jeu de données ozone en un ensemble
 # d'apprentissage (environ 70%) et un ensemble de test.
 
+ap_index=sample(nrow(ozone),floor(nrow(ozone)*70/100))
+ozone_app=ozone[ap_index,]
+ozone_test=ozone[-ap_index,] 
+
 # Question : Calculer l'EQM du modèle complet (10 variables) sur le jeu de test.
+
+mod_complet= myreg(ozone_app, c(2:11),1);
+
+prediction=predict(mod_complet,ozone_test)
+eq=prediction-ozone_test$y
+mean(eq^2)# 439.0908
 
 # Cette performance nous servira de base (on va essayer d'améliorer cette perf en mettant des 
 # puissances et en faisant de la sélection de variables)
@@ -181,10 +195,35 @@ mean(eq^2)#895.2304
 #Question : Appliquer la sélection ascendante puis calculer l'EQM du modèle sélectionné 
 # sur le jeu de test.
 
+#selec_asc = function(data, idx_p, idx_c, K)
+
+selec_asc (ozone, c(2:11), 1, 100)# 3.0000  11.0000   5.0000  10.0000
+
+mod_asd= myreg(ozone_app, c(3,11,5,10),1);
+
+prediction=predict(mod_asd,ozone_test)
+eq=prediction-ozone_test$y
+mean(eq^2)#  291.9948
+
 # Ajouter maintenant les puissances que vous avez choisies pour la variable x2
+
+v=c(2.5,2,3)
+ozone_v2 = puissance(ozone, 3, v)
+
+ozone_v2
 
 # Question : Estimer la performance (sur jeu de test) du modèle qui contient toutes les variables de 
 # départ ainsi que ces nouvelles puissances.
+
+ozone_app=ozone_v2[ap_index,]
+ozone_test=ozone_v2[-ap_index,] 
+
+mod_asd_puis= myreg(ozone_app, c(3,11,5,10,12,13,14),1);
+
+prediction=predict(mod_asd_puis,ozone_test)
+eq=prediction-ozone_test$y
+mean(eq^2)# 4534.648
+
 
 # Puis appliquer la sélection de variables. Trouvez vous un meilleur modèle ?
 
