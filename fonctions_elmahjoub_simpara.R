@@ -69,7 +69,7 @@ puissance = function(data, idx_col, p){
 
 
 
-
+#Calcule l'eqm
 eqm = function( apprenti,test,idxp, idxc){
   
   
@@ -115,7 +115,7 @@ generateFilePrediction=function(apprenti,test,idx_p, idx_c){
   
 }
 
-# fonction selec_asc 
+#recheche ascendante
 selec_asc = function(apprenti,test, idx_p, idx_c){
   
   Vs = c()
@@ -160,4 +160,69 @@ selec_asc = function(apprenti,test, idx_p, idx_c){
 	}
 	
 	return (out[,-1])
+}
+
+#recheche descendante
+
+selec_desc = function(apprenti,test, idx_p, idx_c){
+  
+  Vs = idx_p
+  
+  Cb = eqm(apprenti,test, idx_p,idx_c)
+  
+  out = matrix(0, nrow = 2)
+  
+  for ( i in length(Vs):1)
+  {
+    
+    eqms=c()
+    combs=c()
+    
+    res=combn(Vs, i-1, function(x){
+      
+      eqms=c(eqms, eqm(apprenti,test, x,idx_c))
+      combs=c(combs,x)
+    })
+    
+    C_X_best = min(eqms)# le performance du cb 
+    
+    indice_min_eqm = which.min(eqms)# indice
+    
+    X_best = combs[indice_min_eqm]# la combinaison
+    
+    if (C_X_best < Cb)
+    {
+      Vs = X_best
+      
+      Cb = C_X_best
+      
+      out = cbind(out, c(X_best, C_X_best))
+      
+    }
+    
+  }
+  
+  return (out[,-1])
+}
+
+#Kplis
+kplis = function(data, idxp, idxc,k){
+  
+  k = floor(runif(nrow(data), 1, k+1))
+  
+  eqm=sapply(c(1:k),function(x){
+    
+    apprenti=data[which(k==x),]
+    test=data[-which(k==x),]
+    
+    mod= myreg(apprenti, idxp,idxc);
+    prediction=predict( mod,test);
+    eq=prediction-test[,idxc]
+    
+    mean(eq^2);
+  })
+  
+  
+  return (mean(eqm))
+  
 }

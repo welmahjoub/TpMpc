@@ -9,20 +9,20 @@ competition = read.table("./competition.txt", header = T)
 
 ####################################################### etape 1:#############################
 
-# varaible predictrice : f1 a f29 
+# vaiables predictrices : f1 a f29 
 # variable cible : f30
 # liens : ce sont tous des films
 
-#  generation des index des apprenti alearatoire et les stocker dans un fichier
+#generation des index des apprenti alearatoire et les stocker dans un fichier
 
-# ap_index=sample(nrow(dataset ),floor(nrow(dataset )*70/100))
+#ap_index=sample(nrow(dataset ),floor(nrow(dataset )*70/100))
 
-# write.csv(data.frame("ap_index" = ap_index), file ="./ap_index.csv", row.names = F)
+#write.csv(data.frame("ap_index" = ap_index), file ="./ap_index.csv", row.names = F)
 
 ########################## etape 2: choix meilleur model a un seule variable#############################
 
 
-ap_index=read.table("./ap_index.csv", header = T) # lire les index des apprenti qui ont ete genere
+ap_index=read.table("./ap_index.csv", header = T) # lecture des index desqui ont été générés
 ap_index=ap_index$ap_index
 
 apprenti=dataset[ap_index,]
@@ -37,6 +37,15 @@ eqm ( apprenti,apprenti ,9, 30) # eqm apprenti 2.052324
   
 generateFilePrediction(dataset,competition,9, 30)# prediction des competition
 
+#Verifaction erreur Apprenti
+
+model_f9 = myreg(apprenti,9, 30)
+
+model_f9
+erreur_app = mean (model_f9$residuals^2)
+erreur_app #☻2.052324
+
+eqm ( apprenti,test ,9, 30) # erreur test 2.233365
 
 #################################### etape 3: utilisation des 29 variables #############################
 
@@ -47,6 +56,13 @@ eqm (apprenti , test,c(1:29), 30)#eqm test : 1.680958
 eqm (apprenti , apprenti ,c(1:29), 30)# eqm apprenti 1.356254
 
 generateFilePrediction(dataset,competition,c(1:29), 30)# prediction des competition
+
+#Verifction erreur Apprenti
+
+model_f129  = myreg(apprenti,c(1:29), 30)
+
+erreur_app_f129 = mean (model_f129$residuals^2)
+erreur_app_f129 #☺1.356254
 
 #################################### etape 4: selection ascendante des variables #########################
 
@@ -59,7 +75,7 @@ selec_asc (apprenti,test, c(1:29), 30)
  
 #         [,12]     [,13]   [,14]     [,15]
 # [1,] 14.000000 27.000000 4.00000 10.000000
-# [2,]  1.650554  1.649191 1.64856  1.648442  
+# [2,]  1.650554  1.649191 1.64856  1.648442 
 
 variable_select=c(9,21,8,6,26,28,2,15,23,25,12,14,27,4,10)
 
@@ -68,6 +84,13 @@ eqm (apprenti , test,variable_select, 30)#eqm test :1.648442
 eqm (apprenti , apprenti ,variable_select, 30)# eqm apprenti 1.41756
 
 generateFilePrediction(dataset,competition,variable_select, 30)# prediction des competition
+
+#Verifiction erreur Apprenti
+
+model_asc  = myreg(apprenti,variable_select, 30)
+
+erreur_app_asc  = mean (model_asc $residuals^2)
+erreur_app_asc  #1.41756
 
 
 #################################### etape 5: ajout des puissance #########################
@@ -80,7 +103,7 @@ length(new_data)
 
 source("./fonctions_elmahjoub_simpara.R")
 
-eqm_pos=sapply(c(2:9),function(x){
+eqm_pos=sapply(c(2:11),function(x){
   
   new_data = puissance(dataset, 9, x)
   
@@ -162,6 +185,22 @@ test_puiss=dataset_puissance[-ap_index,]
 eqm(apprenti_puiss,test_puiss,c(9,31,32,33), 30)#2.31731 : cette valeur n'est meilleur que les autres
 
 
+#################################### choix des meilleurs puissance Bis #################################
+
+# eqm des puissances 9 10 11 :2.235485 2.233357 2.231681
+
+meilleur_puiss_Bis=c(9,10,11)
+
+dataset_puissance_Bis = puissance(dataset, 9, meilleur_puiss_Bis)
+
+
+apprenti_puiss_Bis=dataset_puissance_Bis[ap_index,]
+
+test_puiss_Bis=dataset_puissance_Bis[-ap_index,] 
+
+eqm(apprenti_puiss_Bis,test_puiss_Bis,c(9,31,32,33), 30)#2.316822 : cette valeur n'est meilleur que les autres non pus
+
+
 ################################################## Ascendante et puissance F9^9 ##################
 
 meilleur_puiss=c(9)
@@ -196,7 +235,7 @@ competition_puissance = puissance(competition,9,meilleur_puiss)
 apprenti_n=dataset_puissance[ap_index,]
 test_n=dataset_puissance[-ap_index,] 
 
-variable_select2=c(variable_select,31)# les ancien varaiabe selectionne avec colonne 9^9
+variable_select2=c(variable_select,31)# les ancien varaiabe selectionne avec colonne 9^15
 
 eqm (apprenti_n , test_n,variable_select2, 30)#eqm test : 1.644674
 
